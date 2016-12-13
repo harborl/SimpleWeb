@@ -106,7 +106,7 @@ public class StaticServer {
         }
 
         Util.writeResponseQuitely(socket.getOutputStream(), 
-                                  "no handler found", 400, "Not Found");
+                                  "no handler found", 400, "Bad Request");
       } catch (Throwable th) {
         try {
           Util.writeErrorQuitely(socket.getOutputStream(), th);

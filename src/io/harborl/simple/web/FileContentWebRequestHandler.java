@@ -44,7 +44,7 @@ public class FileContentWebRequestHandler implements WebRequestHandler {
     }
 
     Util.writeResponseQuitely(response.getOutStream(), 
-                              "File doesn't exist", 400, "Not Found");
+                              "File doesn't exist", 404, "Not Found");
     return false;
   }
 
