@@ -81,6 +81,11 @@ public final class Util {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-    
+  }
+  
+  public static String buildContentDisposition(String fileName) {
+    final String encodedFileName = fileName; // TODO: url encode it.
+    String contentDisposition = "attachment; filename=\"" + encodedFileName +"\"; filename*=UTF-8''" + encodedFileName;
+    return contentDisposition;
   }
 }

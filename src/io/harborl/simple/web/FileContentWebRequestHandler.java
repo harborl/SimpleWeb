@@ -17,6 +17,8 @@ public class FileContentWebRequestHandler implements WebRequestHandler {
     this.path = path;
     policies = new ArrayList<ContentResponsePolicy>();
     {
+      policies.add(new ImageContentResponsePolicy());
+      policies.add(new ZipContentResponsePolicy());
       policies.add(new DefaultContentResponsePolicy());
     }
   }
