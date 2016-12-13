@@ -1,5 +1,6 @@
 package io.harborl.simple.web;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -24,7 +25,8 @@ public final class Util {
     writeResponseQuitely(outputStream, stack, 500, "Internal Server Error");
   }
   
-  public static void writeResponseQuitely(OutputStream outputStream, String info, int code, String reason) {
+  public static void writeResponseQuitely(OutputStream outputStream, String info, 
+                                          int code, String reason) {
 
     try {
       BufferedWriter reponse = new BufferedWriter(new OutputStreamWriter(outputStream, UTF_8));
@@ -33,12 +35,10 @@ public final class Util {
       // write headers
       reponse.write("Server: SimpleWeb" + "\r\n");
       reponse.write("Content-Type: text/html" + "\r\n");
-//      reponse.write("Content-Length: " + info.getBytes(UTF_8).length + "\r\n");
+      reponse.write("Content-Length: " + info.getBytes(UTF_8).length + "\r\n");
       reponse.write("\r\n");
       // write body
       reponse.write(info);
-      // write the end
-      reponse.write("\r\n");
       reponse.flush();
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -61,5 +61,26 @@ public final class Util {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public static void writeBytesQuitely(OutputStream outputStream, byte[] data, String contentType, 
+                                       String contentDispository) {
+    try {
+      BufferedOutputStream reponse = new BufferedOutputStream(outputStream);
+      // write response line
+      final String reponseLine = "HTTP/1.1 " + 200 + " " + "OK" + "\r\n";
+      reponse.write(reponseLine.getBytes());
+      // write headers
+      reponse.write(("Server: SimpleWeb" + "\r\n").getBytes());
+      reponse.write(("Content-Type: " + contentType + "\r\n").getBytes());
+      reponse.write(("Content-Length: " + data.length + "\r\n").getBytes());
+      reponse.write(("\r\n").getBytes());
+      // write body
+      reponse.write(data, 0, data.length);
+      reponse.flush();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+    
   }
 }

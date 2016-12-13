@@ -6,8 +6,11 @@ public class DefaultContentResponsePolicy implements ContentResponsePolicy {
 
   @Override
   public boolean dealWith(File file, HttpResponse response) {
-    Util.writeResponseQuitely(response.getOutStream(), 
-        "OK", 200, "OK");
+
+    final byte[] data = Util.readBytes(file);
+    final String contentType = "application/octet-stream";
+    final String contentDispository = null;
+    Util.writeBytesQuitely(response.getOutStream(), data, contentType, contentDispository);
     
     return true;
   }
