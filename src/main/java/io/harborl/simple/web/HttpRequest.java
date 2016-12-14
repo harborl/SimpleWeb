@@ -28,9 +28,9 @@ public class HttpRequest {
     if (tokens.length < 3) {
       throw new RuntimeException("status line format wrong. - " + statusLine);
     }
-    
+
     method = HttpMethod.verify(tokens[0]);
-    path = tokens[1];
+    path = java.net.URLDecoder.decode(tokens[1], "UTF-8");
     httpVersion = tokens[2];
 
     headers = new HashMap<String, String>();
@@ -41,7 +41,7 @@ public class HttpRequest {
       if (splitPos != -1) {
         final String key = line.substring(0, splitPos).trim().toLowerCase();
         final String value = line.substring(splitPos + 1).trim().toLowerCase();
-        
+
         if (key.equalsIgnoreCase("host")) {
           headers.put(key, value);
           break; // ignore others to simplify process
