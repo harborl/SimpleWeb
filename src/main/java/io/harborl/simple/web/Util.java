@@ -64,6 +64,9 @@ public final class Util {
     reponse.write(("Server: SimpleWeb" + "\r\n").getBytes());
     reponse.write(("Content-Type: " + contentType + "\r\n").getBytes());
     reponse.write(("Content-Length: " + data.length + "\r\n").getBytes());
+    if (contentDispository != null && !contentDispository.isEmpty()) {
+      reponse.write(("Content-Dispository: " + contentDispository + "\r\n").getBytes());
+    }
     reponse.write(("\r\n").getBytes());
     // write body
     reponse.write(data, 0, data.length);
