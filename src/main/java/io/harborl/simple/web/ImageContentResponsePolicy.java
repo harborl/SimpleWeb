@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 public class ImageContentResponsePolicy implements ContentResponsePolicy  {
 
-  private final Pattern pattern = Pattern.compile("(.+?)\\.(png|jpg|gif|bmp)");
+  private final Pattern pattern = Pattern.compile("(.+?)\\.(png|jpg|gif|bmp|png)");
   
   @Override
   public boolean dealWith(File file, HttpResponse response) throws IOException {

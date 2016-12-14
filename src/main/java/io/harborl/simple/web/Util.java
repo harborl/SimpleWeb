@@ -74,14 +74,28 @@ public final class Util {
   }
   
   public static String buildContentDisposition(String fileName) {
-    String encodedFileName;
-    try {
-      encodedFileName = java.net.URLEncoder.encode(fileName, UTF_8);
-    } catch (UnsupportedEncodingException e) {
-      e.printStackTrace();
-      encodedFileName = fileName;
-    }
+    String encodedFileName = urlEncodeWithFullback(fileName);
     String contentDisposition = "attachment; filename=\"" + encodedFileName +"\"; filename*=UTF-8''" + encodedFileName;
     return contentDisposition;
+  }
+  
+  public static String urlEncodeWithFullback(String src) {
+    String target = null;
+    try {
+      target = java.net.URLEncoder.encode(src, UTF_8);
+    } catch (UnsupportedEncodingException fullback) {
+      target = src;
+    }
+    return target;
+  }
+  
+  public static String urlDecodeWithFullback(String src) {
+    String target = null;
+    try {
+      target = java.net.URLDecoder.decode(src, "UTF-8");
+    } catch (Exception fullback) {
+      target = src;
+    }
+    return target;
   }
 }

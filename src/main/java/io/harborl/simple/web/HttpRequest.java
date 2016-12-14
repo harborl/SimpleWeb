@@ -30,7 +30,7 @@ public class HttpRequest {
     }
 
     method = HttpMethod.verify(tokens[0]);
-    path = java.net.URLDecoder.decode(tokens[1], "UTF-8");
+    path = Util.urlDecodeWithFullback(tokens[1]);
     httpVersion = tokens[2];
 
     headers = new HashMap<String, String>();
@@ -54,7 +54,7 @@ public class HttpRequest {
       throw new RuntimeException("Don't contain host header. - " + statusLine);
     }
   }
-  
+
   @Override
   public String toString() {
     return "HttpRequest [path=" + path + ", method=" + method + ", httpVersion=" + httpVersion + "]";
