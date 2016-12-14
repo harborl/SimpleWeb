@@ -8,5 +8,5 @@
 
 ## The command line parameters
 
-> cmd <listening-port> <concurrent_level> <folder_path>
+cmd <listening-port> <concurrent_level> <folder_path>
 
