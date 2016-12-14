@@ -37,15 +37,16 @@ public class HttpRequest {
     
     for (String line = null; (line = reader.readLine()) != null; ) {
       line = line.trim();
+      
+      // Reach the end of headers
+      if (line.isEmpty()) break;
+      
       final int splitPos = line.indexOf(':');
       if (splitPos != -1) {
         final String key = line.substring(0, splitPos).trim().toLowerCase();
         final String value = line.substring(splitPos + 1).trim().toLowerCase();
 
-        if (key.equalsIgnoreCase("host")) {
-          headers.put(key, value);
-          break; // ignore others to simplify process
-        }
+        headers.put(key, value);
       }
 
     }
