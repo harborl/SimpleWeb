@@ -33,7 +33,7 @@ public final class Util {
     reponse.write("HTTP/1.1 " + code + " " + reason + "\r\n");
     // write headers
     reponse.write("Server: SimpleWeb" + "\r\n");
-    reponse.write("Content-Type: text/html" + "\r\n");
+    reponse.write("Content-Type: text/html; charset=utf-8" + "\r\n");
     reponse.write("Content-Length: " + info.getBytes(UTF_8).length + "\r\n");
     reponse.write("\r\n");
     // write body
