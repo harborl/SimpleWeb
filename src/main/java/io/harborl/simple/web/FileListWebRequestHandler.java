@@ -2,6 +2,7 @@ package io.harborl.simple.web;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.util.regex.Pattern;
 
 public class FileListWebRequestHandler implements WebRequestHandler {
@@ -19,7 +20,7 @@ public class FileListWebRequestHandler implements WebRequestHandler {
   }
 
   @Override
-  public boolean handle(HttpRequest request, HttpResponse response) {
+  public boolean handle(HttpRequest request, HttpResponse response) throws IOException {
     
     final String reqPath = request.getPath();
     if (pattern.matcher(reqPath).matches()) {
@@ -56,7 +57,7 @@ public class FileListWebRequestHandler implements WebRequestHandler {
         return true;
       } else {
         Util.writeResponseQuitely(response.getOutStream(), 
-                                  "Empty Folder", 200, "OK");
+                                  "Empty Folder\n", 200, "OK");
         return true;
       }
     }

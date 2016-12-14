@@ -1,6 +1,7 @@
 package io.harborl.simple.web;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -17,6 +18,7 @@ public class FileContentWebRequestHandler implements WebRequestHandler {
     this.path = path;
     policies = new ArrayList<ContentResponsePolicy>();
     {
+      policies.add(new HtmlTextContentResponsePolicy());
       policies.add(new ImageContentResponsePolicy());
       policies.add(new ZipContentResponsePolicy());
       policies.add(new DefaultContentResponsePolicy());
@@ -28,23 +30,26 @@ public class FileContentWebRequestHandler implements WebRequestHandler {
   }
 
   @Override
-  public boolean handle(HttpRequest request, HttpResponse response) {
+  public boolean handle(HttpRequest request, HttpResponse response) throws IOException {
     final String reqPath = request.getPath();
     Matcher matcher = pattern.matcher(reqPath);
     if (matcher.matches()) {
       String fileName = matcher.group(1);
       File file = new File(path + "/" + fileName);
-      if (!file.isDirectory()) {
+      if (file.exists() && !file.isDirectory()) {
         for (ContentResponsePolicy policy : policies) {
           if (policy.dealWith(file, response)) {
             return true;
           }
         }
+
+        // default content policy should always deal with it.
+        throw new AssertionError("should never rearch here.");
+      } else {
+        Util.writeResponseQuitely(response.getOutStream(), 
+                                  "File doesn't exist\n", 404, "Not Found");
       }
     }
-
-    Util.writeResponseQuitely(response.getOutStream(), 
-                              "File doesn't exist", 404, "Not Found");
     return false;
   }
 

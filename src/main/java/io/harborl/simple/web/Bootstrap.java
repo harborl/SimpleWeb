@@ -26,6 +26,7 @@ public class Bootstrap {
     
     // main thread blocks here
     try {
+      System.out.println("SimpleWeb Server startup - lisened on " + port);
       server.start();
     } catch (IOException e) {
       System.err.println("Startup phrase network error raised, check following:");

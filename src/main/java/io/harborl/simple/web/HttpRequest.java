@@ -15,7 +15,7 @@ public class HttpRequest {
   
   // Status line
   private final String path;
-  private final String method;
+  private final HttpMethod method;
   private final String httpVersion;
   
   private HttpRequest(InputStream inStream) throws IOException {
@@ -29,7 +29,7 @@ public class HttpRequest {
       throw new RuntimeException("status line format wrong. - " + statusLine);
     }
     
-    method = tokens[0];
+    method = HttpMethod.verify(tokens[0]);
     path = tokens[1];
     httpVersion = tokens[2];
 
@@ -72,7 +72,7 @@ public class HttpRequest {
     return Collections.unmodifiableMap(headers);
   }
 
-  public String getMethod() {
+  public HttpMethod getMethod() {
     return method;
   }
 

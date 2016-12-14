@@ -3,8 +3,10 @@ package io.harborl.simple.web;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.SynchronousQueue;
@@ -20,7 +22,7 @@ public class StaticServer {
   /** 
    * Underlying chain-of-responsibility to handle the web request.
    * */
-  private final List<WebRequestHandler> requestHandlers;
+  private final Map<HttpMethod, List<WebRequestHandler>> requestHandlers;
   
   /**
    * Underlying request thread-pool based executor.
@@ -47,10 +49,15 @@ public class StaticServer {
       throw new IllegalArgumentException();
     }
     
-    requestHandlers = new ArrayList<WebRequestHandler>();
-    requestHandlers.add(FileListWebRequestHandler.valueOf(folderPath));
-    requestHandlers.add(FileContentWebRequestHandler.valueOf(folderPath));
-
+    // Initialize the request handler mapping
+    requestHandlers = new HashMap<HttpMethod, List<WebRequestHandler>>();
+    {
+      requestHandlers.put(
+        HttpMethod.GET, 
+        Arrays.asList(FileListWebRequestHandler.valueOf(folderPath), 
+                      FileContentWebRequestHandler.valueOf(folderPath)));
+    }
+    
     // 1. bounded thread pool with specified concurrent level
     // 2. synchronous hand-over blocking queue
     // 3. call-runs after over-follow
@@ -81,7 +88,7 @@ public class StaticServer {
     }
   }
   
-  class WebRequestDispatch implements Runnable {
+  final class WebRequestDispatch implements Runnable {
     private final Socket socket;
     
     WebRequestDispatch(Socket socket) {
@@ -90,23 +97,24 @@ public class StaticServer {
 
     @Override
     public void run() {
-      
       try {
         HttpRequest httpRequst = HttpRequest.newOf(socket.getInputStream());
         HttpResponse httpResponse = HttpResponse.newOf(socket.getOutputStream());
         
         System.out.println("> " + httpRequst);
         
-        boolean hasConsumed = false;
-        for (WebRequestHandler handler : requestHandlers) {
-          hasConsumed = handler.handle(httpRequst, httpResponse);
-          if (hasConsumed) {
-            return;
+        if (requestHandlers.containsKey(httpRequst.getMethod())) {
+          List<WebRequestHandler> handlers = requestHandlers.get(httpRequst.getMethod());
+
+          for (WebRequestHandler handler : handlers) {
+            if (handler.handle(httpRequst, httpResponse)) {
+              return;
+            }
           }
         }
 
         Util.writeResponseQuitely(socket.getOutputStream(), 
-                                  "no handler found", 400, "Bad Request");
+                                  "no handler found\n", 400, "Bad Request");
       } catch (Throwable th) {
         try {
           Util.writeErrorQuitely(socket.getOutputStream(), th);
