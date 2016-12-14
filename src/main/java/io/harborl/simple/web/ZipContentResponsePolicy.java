@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 public class ZipContentResponsePolicy implements ContentResponsePolicy   {
 
-  private final Pattern pattern = Pattern.compile("(.+?)\\.(zip|gz|tar)");
+  private final Pattern pattern = Pattern.compile("(.+?)\\.(zip|gz|tar)", Pattern.CASE_INSENSITIVE);
   
   @Override
   public boolean dealWith(File file, HttpResponse response) throws IOException {

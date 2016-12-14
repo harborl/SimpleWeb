@@ -6,7 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class HtmlTextContentResponsePolicy implements ContentResponsePolicy  {
-  private final Pattern pattern = Pattern.compile("(.+?)\\.(html|txt|htm)");
+  private final Pattern pattern = Pattern.compile("(.+?)\\.(html|txt|htm)", Pattern.CASE_INSENSITIVE);
   
   @Override
   public boolean dealWith(File file, HttpResponse response) throws IOException {
