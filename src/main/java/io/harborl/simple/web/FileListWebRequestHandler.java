@@ -50,12 +50,10 @@ public class FileListWebRequestHandler implements WebRequestHandler {
           sb.append("</html>\n");
         }
         
-        Util.writeResponseQuitely(response.getOutStream(), 
-                                  sb.toString(), 200, "OK");
+        Util.writeTextResponse(response.getOutStream(), sb.toString(), 200, "OK");
         return true;
       } else {
-        Util.writeResponseQuitely(response.getOutStream(), 
-                                  "Empty Folder\n", 200, "OK");
+        Util.writeTextResponse(response.getOutStream(), "Empty Folder\n", 200, "OK");
         return true;
       }
     }

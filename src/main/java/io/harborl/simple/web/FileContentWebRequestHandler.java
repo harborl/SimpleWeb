@@ -46,8 +46,7 @@ public class FileContentWebRequestHandler implements WebRequestHandler {
         // default content policy should always deal with it.
         throw new AssertionError("should never rearch here.");
       } else {
-        Util.writeResponseQuitely(response.getOutStream(), 
-                                  "File doesn't exist\n", 404, "Not Found");
+        Util.writeTextResponse(response.getOutStream(), "File doesn't exist\n", 404, "Not Found");
       }
     }
     return false;

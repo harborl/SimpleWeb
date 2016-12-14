@@ -11,7 +11,7 @@ public class DefaultContentResponsePolicy implements ContentResponsePolicy {
     final byte[] data = Util.readBytes(file);
     final String contentType = "application/octet-stream";
     final String contentDispository = null;
-    Util.writeBytesQuitely(response.getOutStream(), data, contentType, contentDispository);
+    Util.writeBytesResponse(response.getOutStream(), data, contentType, contentDispository);
     
     return true;
   }

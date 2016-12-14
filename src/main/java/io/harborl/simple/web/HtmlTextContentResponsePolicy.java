@@ -16,7 +16,7 @@ public class HtmlTextContentResponsePolicy implements ContentResponsePolicy  {
     if (matcher.matches()) {
       final String contentType = "text/html";
       final byte[] data = Util.readBytes(file);
-      Util.writeBytesQuitely(response.getOutStream(), data, contentType, null);
+      Util.writeBytesResponse(response.getOutStream(), data, contentType, null);
       return true;
     }
 

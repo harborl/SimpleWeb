@@ -17,8 +17,8 @@ public class ZipContentResponsePolicy implements ContentResponsePolicy   {
     if (matcher.matches()) {
       final String contentType = "application/octet-stream";
       final byte[] data = Util.readBytes(file);
-      Util.writeBytesQuitely(response.getOutStream(), data, contentType, 
-                             Util.buildContentDisposition(fileName));
+      Util.writeBytesResponse(response.getOutStream(), data, contentType, 
+                              Util.buildContentDisposition(fileName));
       return true;
     }
 

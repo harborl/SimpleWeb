@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 
 public final class Util {
 
@@ -17,16 +18,16 @@ public final class Util {
   
   public static final String UTF_8 = "UTF-8";
   
-  public static void writeErrorQuitely(OutputStream outputStream, Throwable th) throws IOException {
+  public static void writeError(OutputStream outputStream, Throwable th) throws IOException {
     StringWriter writer = new StringWriter();
     th.printStackTrace(new PrintWriter(writer));
     String stack = writer.toString();
 
-    writeResponseQuitely(outputStream, stack, 500, "Internal Server Error");
+    writeTextResponse(outputStream, stack, 500, "Internal Server Error");
   }
   
-  public static void writeResponseQuitely(OutputStream outputStream, String info, 
-                                          int code, String reason) throws IOException {
+  public static void writeTextResponse(OutputStream outputStream, String info, 
+                                       int code, String reason) throws IOException {
     BufferedWriter reponse = new BufferedWriter(new OutputStreamWriter(outputStream, UTF_8));
     // write response line
     reponse.write("HTTP/1.1 " + code + " " + reason + "\r\n");
@@ -54,12 +55,11 @@ public final class Util {
     return bStream.toByteArray();
   }
 
-  public static void writeBytesQuitely(OutputStream outputStream, byte[] data, String contentType, 
-                                       String contentDispository) throws IOException {
+  public static void writeBytesResponse(OutputStream outputStream, byte[] data, String contentType, 
+                                        String contentDispository) throws IOException {
     BufferedOutputStream reponse = new BufferedOutputStream(outputStream);
     // write response line
-    final String reponseLine = "HTTP/1.1 " + 200 + " " + "OK" + "\r\n";
-    reponse.write(reponseLine.getBytes());
+    reponse.write(("HTTP/1.1 " + 200 + " " + "OK" + "\r\n").getBytes());
     // write headers
     reponse.write(("Server: SimpleWeb" + "\r\n").getBytes());
     reponse.write(("Content-Type: " + contentType + "\r\n").getBytes());
@@ -71,7 +71,13 @@ public final class Util {
   }
   
   public static String buildContentDisposition(String fileName) {
-    final String encodedFileName = fileName; // TODO: url encode it.
+    String encodedFileName;
+    try {
+      encodedFileName = java.net.URLEncoder.encode(fileName, UTF_8);
+    } catch (UnsupportedEncodingException e) {
+      e.printStackTrace();
+      encodedFileName = fileName;
+    }
     String contentDisposition = "attachment; filename=\"" + encodedFileName +"\"; filename*=UTF-8''" + encodedFileName;
     return contentDisposition;
   }

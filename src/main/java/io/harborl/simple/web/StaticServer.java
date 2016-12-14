@@ -113,11 +113,10 @@ public class StaticServer {
           }
         }
 
-        Util.writeResponseQuitely(socket.getOutputStream(), 
-                                  "no handler found\n", 400, "Bad Request");
+        Util.writeTextResponse(socket.getOutputStream(), "no handler found\n", 400, "Bad Request");
       } catch (Throwable th) {
         try {
-          Util.writeErrorQuitely(socket.getOutputStream(), th);
+          Util.writeError(socket.getOutputStream(), th);
         } catch (IOException ignored) { }
       } finally {
         try {
