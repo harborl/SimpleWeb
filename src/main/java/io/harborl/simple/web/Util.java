@@ -72,6 +72,30 @@ public final class Util {
     reponse.write(data, 0, data.length);
     reponse.flush();
   }
+
+  public static void copyFileToResponse(OutputStream outputStream, File file, String contentType, 
+                                        String contentDispository) throws IOException {
+    BufferedOutputStream reponse = new BufferedOutputStream(outputStream);
+    // write response line
+    reponse.write(("HTTP/1.1 " + 200 + " " + "OK" + "\r\n").getBytes());
+    // write headers
+    reponse.write(("Server: SimpleWeb" + "\r\n").getBytes());
+    reponse.write(("Content-Type: " + contentType + "\r\n").getBytes());
+    reponse.write(("Content-Length: " + file.length() + "\r\n").getBytes());
+    if (contentDispository != null && !contentDispository.isEmpty()) {
+      reponse.write(("Content-Dispository: " + contentDispository + "\r\n").getBytes());
+    }
+    reponse.write(("\r\n").getBytes());
+
+    // write body
+    FileInputStream fStream = new FileInputStream(file);
+    byte[] buf = new byte[1024 * 4]; // 4k -> one block
+    for (int n; (n = fStream.read(buf)) != -1;) {
+      reponse.write(buf, 0, n);
+    }
+    fStream.close();
+    reponse.flush();
+  }
   
   public static String buildContentDisposition(String fileName) {
     String encodedFileName = urlEncodeWithFullback(fileName);

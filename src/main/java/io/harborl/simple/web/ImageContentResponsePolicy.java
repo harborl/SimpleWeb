@@ -17,8 +17,7 @@ public class ImageContentResponsePolicy implements ContentResponsePolicy  {
     if (matcher.matches()) {
       final String extend = matcher.group(2);
       final String contentType = "image/" + extend;
-      final byte[] data = Util.readBytes(file);
-      Util.writeBytesResponse(response.getOutStream(), data, contentType, null);
+      Util.copyFileToResponse(response.getOutStream(), file, contentType, null);
       return true;
     }
 
