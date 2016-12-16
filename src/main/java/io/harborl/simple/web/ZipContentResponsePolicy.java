@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ZipContentResponsePolicy implements ContentResponsePolicy   {
+public final class ZipContentResponsePolicy implements ContentResponsePolicy   {
 
   private final Pattern pattern = Pattern.compile("(.+?)\\.(zip|gz|tar)", Pattern.CASE_INSENSITIVE);
   
@@ -16,8 +16,7 @@ public class ZipContentResponsePolicy implements ContentResponsePolicy   {
     Matcher matcher = pattern.matcher(fileName);
     if (matcher.matches()) {
       final String contentType = "application/octet-stream";
-      Util.copyFileToResponse(response.getOutStream(), file, contentType, 
-                              Util.buildContentDisposition(fileName));
+      response.copyFile(file, contentType, Util.buildContentDisposition(fileName));
       return true;
     }
 

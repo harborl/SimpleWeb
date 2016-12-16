@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FileListWebRequestHandler implements WebRequestHandler {
+public final class FileListWebRequestHandler implements WebRequestHandler {
   
   private final Pattern pattern;
   private final String path;
@@ -50,10 +50,10 @@ public class FileListWebRequestHandler implements WebRequestHandler {
           sb.append("</html>\n");
         }
         
-        Util.writeTextResponse(response.getOutStream(), sb.toString(), 200, "OK");
+        response.writeText(sb.toString(), 200, "OK");
         return true;
       } else {
-        Util.writeTextResponse(response.getOutStream(), "Empty Folder\n", 200, "OK");
+        response.writeText("Empty Folder\n", 200, "OK");
         return true;
       }
     }

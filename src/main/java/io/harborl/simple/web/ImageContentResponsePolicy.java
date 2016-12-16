@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ImageContentResponsePolicy implements ContentResponsePolicy  {
+public final class ImageContentResponsePolicy implements ContentResponsePolicy  {
 
   private final Pattern pattern = Pattern.compile("(.+?)\\.(png|jpg|gif|bmp|png)", Pattern.CASE_INSENSITIVE);
   
@@ -17,7 +17,7 @@ public class ImageContentResponsePolicy implements ContentResponsePolicy  {
     if (matcher.matches()) {
       final String extend = matcher.group(2);
       final String contentType = "image/" + extend;
-      Util.copyFileToResponse(response.getOutStream(), file, contentType, null);
+      response.copyFile(file, contentType, null);
       return true;
     }
 

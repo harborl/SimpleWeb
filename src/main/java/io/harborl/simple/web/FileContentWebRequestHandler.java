@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FileContentWebRequestHandler implements WebRequestHandler {
+public final class FileContentWebRequestHandler implements WebRequestHandler {
   
   private final Pattern pattern;
   private final String path;
@@ -43,10 +43,10 @@ public class FileContentWebRequestHandler implements WebRequestHandler {
           }
         }
 
-        // default content policy should always deal with it.
+        // default content policy should always deal with above situation.
         throw new AssertionError("should never rearch here.");
       } else {
-        Util.writeTextResponse(response.getOutStream(), "File doesn't exist\n", 404, "Not Found");
+        response.writeText("File doesn't exist\n", 404, "Not Found");
       }
     }
     return false;

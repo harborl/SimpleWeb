@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +14,7 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class StaticServer {
+public final class StaticServer {
   
   private final int port;
   private final int concurrentLevel;
@@ -21,7 +22,7 @@ public class StaticServer {
   
   /** 
    * Underlying chain-of-responsibility to handle the web request.
-   * */
+   */
   private final Map<HttpMethod, List<WebRequestHandler>> requestHandlers;
   
   /**
@@ -61,12 +62,12 @@ public class StaticServer {
     // 1. bounded thread pool with specified concurrent level
     // 2. synchronous hand-over blocking queue
     // 3. call-runs after over-follow
-    executor = new ThreadPoolExecutor(0, concurrentLevel,
-        60L, TimeUnit.SECONDS,
-        new SynchronousQueue<Runnable>(),
-        Executors.defaultThreadFactory(),
-        new ThreadPoolExecutor.CallerRunsPolicy()
-    );
+    executor = 
+      new ThreadPoolExecutor(0, concurrentLevel,
+                             60L, TimeUnit.SECONDS,
+                             new SynchronousQueue<Runnable>(),
+                             Executors.defaultThreadFactory(),
+                             new ThreadPoolExecutor.CallerRunsPolicy());
   }
   
   public void start() throws IOException {
@@ -75,10 +76,11 @@ public class StaticServer {
       isStarted = this.started;
       this.started = true;
     }
-    
+
     if (!isStarted) {
       serverSocket = new ServerSocket(this.port);
-      for (;!shutdown;) {
+
+      for ( ;!shutdown; ) {
         executor.execute(
             new WebRequestDispatch(
                 serverSocket.accept()
@@ -97,11 +99,15 @@ public class StaticServer {
 
     @Override
     public void run() {
+
+      HttpRequest httpRequst = null;
+      HttpResponse httpResponse = null;
+
       try {
-        HttpRequest httpRequst = HttpRequest.newOf(socket.getInputStream());
-        HttpResponse httpResponse = HttpResponse.newOf(socket.getOutputStream());
+        httpResponse = HttpResponse.newOf(socket.getOutputStream());
+        httpRequst = HttpRequest.newOf(socket.getInputStream());
         
-        System.out.println("> " + httpRequst);
+        System.out.println("> [ " + new Date() + " ] " + httpRequst);
         
         if (requestHandlers.containsKey(httpRequst.getMethod())) {
           List<WebRequestHandler> handlers = requestHandlers.get(httpRequst.getMethod());
@@ -113,33 +119,34 @@ public class StaticServer {
           }
         }
 
-        Util.writeTextResponse(socket.getOutputStream(), "no handler found\n", 400, "Bad Request");
+        httpResponse.writeText("no handler found\n", 400, "Bad Request");
       } catch (Throwable th) {
+        // We suppress all of exceptions and just to try to report the error to client,
+        // which is a trade-off for simplifying the practice.
         try {
-          Util.writeError(socket.getOutputStream(), th);
+          if (httpResponse != null) 
+            httpResponse.writeError(th);
         } catch (IOException ignored) { }
       } finally {
         try {
-          // doesn't support keep alive
+          // doesn't support keep alive.
+          // just close the socket quietly.
           socket.close();
         } catch (IOException ignored) { }
       }
 
     }
-    
   }
 
   public void shutdown() {
     shutdown = true;
   }
 
-
-
   public static Builder newBuilder() {
     return new Builder();
   }
-  
-  public static class Builder {
+
+  public final static class Builder {
     
     private int port;
     private int concurrentLevel;

@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HttpRequest {
+public final class HttpRequest {
   
   private final Map<String, String> headers;
   private final InputStream inStream;

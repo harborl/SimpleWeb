@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class HtmlTextContentResponsePolicy implements ContentResponsePolicy  {
+public final class HtmlTextContentResponsePolicy implements ContentResponsePolicy  {
   private final Pattern pattern = Pattern.compile("(.+?)\\.(html|txt|htm)", Pattern.CASE_INSENSITIVE);
   
   @Override
@@ -15,7 +15,7 @@ public class HtmlTextContentResponsePolicy implements ContentResponsePolicy  {
     Matcher matcher = pattern.matcher(fileName);
     if (matcher.matches()) {
       final String contentType = "text/html";
-      Util.copyFileToResponse(response.getOutStream(), file, contentType, null);
+      response.copyFile(file, contentType, null);
       return true;
     }
 

@@ -2,9 +2,9 @@ package io.harborl.simple.web;
 
 import java.io.IOException;
 
-public class Bootstrap {
+public final class Bootstrap {
   
-  public static void main(String[] args) {
+  public static void main(final String[] args) {
 
     if (args.length < 3) {
       printUsage();
@@ -15,7 +15,7 @@ public class Bootstrap {
     final int level = Integer.valueOf(args[1]);
     final String path = args[2];
 
-    StaticServer server = 
+    final StaticServer server = 
       StaticServer.newBuilder()
         .port(port)
         .concurrentLevel(level)
@@ -26,10 +26,13 @@ public class Bootstrap {
     
     // main thread blocks here
     try {
-      System.out.println("SimpleWeb Server startup - listening on " + port);
+      info("SimpleWeb server startup ...");
+      info("Listening on: " + port);
+      info("Folder hosted on: " + path);
+      info("-------------------------------");
       server.start();
     } catch (IOException e) {
-      System.err.println("Startup phrase network error raised, check following:");
+      err("Error raised on startup:");
       e.printStackTrace();
     } finally {
       System.exit(0);
@@ -38,6 +41,14 @@ public class Bootstrap {
 
   private static void printUsage() {
     System.err.println("cmd <lisening-port> <concurrent-level> <fold-path>");
+  }
+  
+  private static void info(String info) {
+    System.out.println(info);
+  } 
+  
+  private static void err(String err) {
+    System.err.println(err);
   }
 
 }
