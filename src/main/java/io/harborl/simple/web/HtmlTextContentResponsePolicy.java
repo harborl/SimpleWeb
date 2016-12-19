@@ -15,7 +15,7 @@ public final class HtmlTextContentResponsePolicy implements ContentResponsePolic
     final String fileName = file.getName();
     Matcher matcher = pattern.matcher(fileName);
     if (matcher.matches()) {
-      final String contentType = "text/html";
+      final String contentType = "text/html; charset=utf-8";
       response.copyFile(file, contentType, null);
       return true;
     }
