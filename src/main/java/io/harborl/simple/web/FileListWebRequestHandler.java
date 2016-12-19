@@ -8,30 +8,31 @@ import java.util.regex.Pattern;
 public final class FileListWebRequestHandler implements WebRequestHandler {
   
   private final Pattern pattern;
-  private final String path;
+  private final String workPath;
   
   private FileListWebRequestHandler(String path) {
-    this.pattern = Pattern.compile("(.*)\\/");
-    this.path = path;
+    this.pattern = Pattern.compile("(.*?)\\/");
+    this.workPath = path;
   }
-  
+
   public static FileListWebRequestHandler valueOf(String path) {
     return new FileListWebRequestHandler(path);
   }
 
   @Override
   public boolean handle(HttpRequest request, HttpResponse response) throws IOException {
-    
     final String reqPath = request.getPath();
-    Matcher matcher = pattern.matcher(reqPath);
+    final Matcher matcher = pattern.matcher(reqPath);
+
     if (matcher.matches()) {
       final String relativePath = matcher.group(1);
-      File folder = new File(path + relativePath);
+      final File folder = new File(workPath + relativePath);
+
       if (folder.isDirectory()) {
-        File[] files = folder.listFiles();
-        
+        final File[] files = folder.listFiles();
         final String host = request.getHeaders().get("host");
-        StringBuilder sb = new StringBuilder();
+
+        final StringBuilder sb = new StringBuilder();
         {
           sb.append("<!DOCTYPE html>\n");
           sb.append("<body>\n");
@@ -49,7 +50,7 @@ public final class FileListWebRequestHandler implements WebRequestHandler {
           sb.append("</body>\n");
           sb.append("</html>\n");
         }
-        
+
         response.writeText(sb.toString(), 200, "OK");
         return true;
       } else {

@@ -8,20 +8,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class FileContentWebRequestHandler implements WebRequestHandler {
-  
+
   private final Pattern pattern;
-  private final String path;
-  private final List<ContentResponsePolicy> policies;
+  private final String workPath;
+  private final List<ContentResponsePolicy> policyChain;
 
   private FileContentWebRequestHandler(String path) {
     this.pattern = Pattern.compile("\\/(.+)");
-    this.path = path;
-    policies = new ArrayList<ContentResponsePolicy>();
+    this.workPath = path;
+    policyChain = new ArrayList<ContentResponsePolicy>();
     {
-      policies.add(new HtmlTextContentResponsePolicy());
-      policies.add(new ImageContentResponsePolicy());
-      policies.add(new ZipContentResponsePolicy());
-      policies.add(new DefaultContentResponsePolicy());
+      policyChain.add(new HtmlTextContentResponsePolicy());
+      policyChain.add(new ImageContentResponsePolicy());
+      policyChain.add(new ZipContentResponsePolicy());
+      policyChain.add(new DefaultContentResponsePolicy());
     }
   }
   
@@ -32,12 +32,14 @@ public final class FileContentWebRequestHandler implements WebRequestHandler {
   @Override
   public boolean handle(HttpRequest request, HttpResponse response) throws IOException {
     final String reqPath = request.getPath();
-    Matcher matcher = pattern.matcher(reqPath);
+    final Matcher matcher = pattern.matcher(reqPath);
+
     if (matcher.matches()) {
-      String fileName = matcher.group(1);
-      File file = new File(path + "/" + fileName);
+      final String fileName = matcher.group(1);
+      final File file = new File(workPath + "/" + fileName);
+
       if (file.exists() && !file.isDirectory()) {
-        for (ContentResponsePolicy policy : policies) {
+        for (ContentResponsePolicy policy : policyChain) {
           if (policy.dealWith(file, response)) {
             return true;
           }

@@ -4,6 +4,6 @@ import java.io.IOException;
 
 public interface WebRequestHandler {
   
-  boolean handle(HttpRequest request, HttpResponse response) throws IOException ;
+  boolean handle(HttpRequest request, HttpResponse response) throws IOException;
 
 }

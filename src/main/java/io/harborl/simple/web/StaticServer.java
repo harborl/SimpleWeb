@@ -15,50 +15,50 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public final class StaticServer {
-  
+
   private final int port;
   private final int concurrentLevel;
   private final String folderPath;
-  
+
   /** 
    * Underlying chain-of-responsibility to handle the web request.
    */
-  private final Map<HttpMethod, List<WebRequestHandler>> requestHandlers;
-  
+  private final Map<HttpMethod, List<WebRequestHandler>> handlerChains;
+
   /**
    * Underlying request thread-pool based executor.
    */
   private final ExecutorService executor;
-  
+
   private ServerSocket serverSocket;
-  
+
   // guarded by this
   private boolean started;
-  
+
   // guarded by volatile
   private volatile boolean shutdown;
-  
+
   private StaticServer(Builder builder) {
     this.port = builder.port;
     this.concurrentLevel = builder.concurrentLevel;
     this.folderPath = builder.folderPath;
-    
+
     if (this.concurrentLevel < 1 ||
         this.folderPath == null ||
         this.folderPath.isEmpty() ||
         this.port < 0) {
       throw new IllegalArgumentException();
     }
-    
+
     // Initialize the request handler mapping
-    requestHandlers = new HashMap<HttpMethod, List<WebRequestHandler>>();
+    handlerChains = new HashMap<HttpMethod, List<WebRequestHandler>>();
     {
-      requestHandlers.put(
-        HttpMethod.GET, 
+      handlerChains.put(HttpMethod.GET,
         Arrays.asList(FileListWebRequestHandler.valueOf(folderPath), 
-                      FileContentWebRequestHandler.valueOf(folderPath)));
+                      FileContentWebRequestHandler.valueOf(folderPath))
+      );
     }
-    
+
     // 1. bounded thread pool with specified concurrent level
     // 2. synchronous hand-over blocking queue
     // 3. call-runs after over-follow
@@ -69,7 +69,7 @@ public final class StaticServer {
                              Executors.defaultThreadFactory(),
                              new ThreadPoolExecutor.CallerRunsPolicy());
   }
-  
+
   public void start() throws IOException {
     boolean isStarted = false;
     synchronized(this) {
@@ -91,8 +91,8 @@ public final class StaticServer {
   }
   
   final class WebRequestDispatch implements Runnable {
-    private final Socket socket;
-    
+    final Socket socket;
+
     WebRequestDispatch(Socket socket) {
       this.socket = socket;
     }
@@ -106,13 +106,13 @@ public final class StaticServer {
       try {
         httpResponse = HttpResponse.newOf(socket.getOutputStream());
         httpRequst = HttpRequest.newOf(socket.getInputStream());
-        
-        System.out.println("> [ " + new Date() + " ] " + httpRequst);
-        
-        if (requestHandlers.containsKey(httpRequst.getMethod())) {
-          List<WebRequestHandler> handlers = requestHandlers.get(httpRequst.getMethod());
 
-          for (WebRequestHandler handler : handlers) {
+        System.out.println("> [ " + new Date() + " ] " + httpRequst);
+
+        if (handlerChains.containsKey(httpRequst.getMethod())) {
+          List<WebRequestHandler> chain = handlerChains.get(httpRequst.getMethod());
+
+          for (WebRequestHandler handler : chain) {
             if (handler.handle(httpRequst, httpResponse)) {
               return;
             }
@@ -147,7 +147,7 @@ public final class StaticServer {
   }
 
   public final static class Builder {
-    
+
     private int port;
     private int concurrentLevel;
     private String folderPath;
@@ -158,17 +158,17 @@ public final class StaticServer {
       this.port = port;
       return this;
     }
-    
+
     public Builder concurrentLevel(int level) {
       this.concurrentLevel = level;
       return this;
     }
-    
+
     public Builder folderPath(String path) {
       this.folderPath = path;
       return this;
     }
-    
+
     public StaticServer build() {
       return new StaticServer(this);
     }

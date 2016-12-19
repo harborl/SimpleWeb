@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class ImageContentResponsePolicy implements ContentResponsePolicy  {
+public final class ImageContentResponsePolicy implements ContentResponsePolicy {
 
-  private final Pattern pattern = Pattern.compile("(.+?)\\.(png|jpg|gif|bmp|png)", Pattern.CASE_INSENSITIVE);
-  
+  private final Pattern pattern = Pattern.compile("(.+?)\\.(png|jpg|gif|bmp|svg)", Pattern.CASE_INSENSITIVE);
+
   @Override
   public boolean dealWith(File file, HttpResponse response) throws IOException {
     

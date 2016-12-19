@@ -11,9 +11,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 public final class HttpResponse {
-  
+
   private final OutputStream sink;
-  
+
   private HttpResponse(OutputStream outStream) {
     this.sink = outStream;
   }
@@ -25,7 +25,7 @@ public final class HttpResponse {
   public OutputStream getOutputStream() {
     return sink;
   }
-  
+
   public void writeError(Throwable th) throws IOException {
     StringWriter writer = new StringWriter();
     th.printStackTrace(new PrintWriter(writer));
@@ -51,37 +51,37 @@ public final class HttpResponse {
   }
   
   public void writeText(String info, int code, String reason) throws IOException {
-    BufferedWriter reponse = new BufferedWriter(new OutputStreamWriter(sink, Util.UTF_8));
+    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(sink, Util.UTF_8));
 
     // write response line
-    reponse.write("HTTP/1.1 " + code + " " + reason + "\r\n");
+    writer.write("HTTP/1.1 " + code + " " + reason + "\r\n");
 
     // write headers
-    reponse.write("Server: SimpleWeb" + "\r\n");
-    reponse.write("Content-Type: text/html; charset=utf-8" + "\r\n");
-    reponse.write("Content-Length: " + info.getBytes(Util.UTF_8).length + "\r\n");
-    reponse.write("\r\n");
+    writer.write("Server: SimpleWeb" + "\r\n");
+    writer.write("Content-Type: text/html; charset=utf-8" + "\r\n");
+    writer.write("Content-Length: " + info.getBytes(Util.UTF_8).length + "\r\n");
+    writer.write("\r\n");
 
     // write body
-    reponse.write(info);
-    reponse.flush();
+    writer.write(info);
+    writer.flush();
   }
 
   public void copyFile(File file, String contentType, String contentDispository) throws IOException {
-    BufferedOutputStream reponse = new BufferedOutputStream(sink);
+    BufferedOutputStream writer = new BufferedOutputStream(sink);
 
     // write response line
-    reponse.write(("HTTP/1.1 " + 200 + " " + "OK" + "\r\n").getBytes());
+    writer.write(("HTTP/1.1 " + 200 + " " + "OK" + "\r\n").getBytes());
 
     // write headers
-    reponse.write(("Server: SimpleWeb" + "\r\n").getBytes());
-    reponse.write(("Content-Type: " + contentType + "\r\n").getBytes());
-    reponse.write(("Content-Length: " + file.length() + "\r\n").getBytes());
+    writer.write(("Server: SimpleWeb" + "\r\n").getBytes());
+    writer.write(("Content-Type: " + contentType + "\r\n").getBytes());
+    writer.write(("Content-Length: " + file.length() + "\r\n").getBytes());
     if (contentDispository != null && !contentDispository.isEmpty()) {
-      reponse.write(("Content-Dispository: " + contentDispository + "\r\n").getBytes());
+      writer.write(("Content-Dispository: " + contentDispository + "\r\n").getBytes());
     }
-    reponse.write(("\r\n").getBytes());
-    reponse.flush();
+    writer.write(("\r\n").getBytes());
+    writer.flush();
 
     // write body
     FileInputStream fStream = new FileInputStream(file);

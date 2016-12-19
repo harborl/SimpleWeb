@@ -11,7 +11,7 @@ public final class DefaultContentResponsePolicy implements ContentResponsePolicy
     final String contentType = "application/octet-stream";
     final String contentDispository = Util.buildContentDisposition(file.getName());
     response.copyFile(file, contentType, contentDispository);
-    
+
     return true;
   }
 

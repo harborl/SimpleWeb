@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class ZipContentResponsePolicy implements ContentResponsePolicy   {
+public final class ZipContentResponsePolicy implements ContentResponsePolicy {
 
   private final Pattern pattern = Pattern.compile("(.+?)\\.(zip|gz|tar)", Pattern.CASE_INSENSITIVE);
   

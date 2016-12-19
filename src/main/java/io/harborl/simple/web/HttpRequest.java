@@ -20,10 +20,10 @@ public final class HttpRequest {
   
   private HttpRequest(InputStream inStream) throws IOException {
     this.inStream = inStream;
-    
+
     BufferedReader reader = new BufferedReader(new InputStreamReader(inStream));
     String statusLine = reader.readLine().trim();
-    
+
     String[] tokens = statusLine.split("\\s+");
     if (tokens.length < 3) {
       throw new RuntimeException("status line format wrong. - " + statusLine);
@@ -45,10 +45,8 @@ public final class HttpRequest {
       if (splitPos != -1) {
         final String key = line.substring(0, splitPos).trim().toLowerCase();
         final String value = line.substring(splitPos + 1).trim().toLowerCase();
-
         headers.put(key, value);
       }
-
     }
 
     if (!headers.containsKey("host")) {

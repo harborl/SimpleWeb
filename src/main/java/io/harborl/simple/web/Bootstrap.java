@@ -23,13 +23,14 @@ public final class Bootstrap {
         .build();
 
     // TODO: install shutdown hook
-    
-    // main thread blocks here
+
     try {
       info("SimpleWeb server startup ...");
       info("Listening on: " + port);
       info("Folder hosted on: " + path);
       info("-------------------------------");
+
+      // main thread blocks here
       server.start();
     } catch (IOException e) {
       err("Error raised on startup:");

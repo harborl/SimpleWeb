@@ -5,12 +5,13 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class HtmlTextContentResponsePolicy implements ContentResponsePolicy  {
-  private final Pattern pattern = Pattern.compile("(.+?)\\.(html|txt|htm)", Pattern.CASE_INSENSITIVE);
-  
+public final class HtmlTextContentResponsePolicy implements ContentResponsePolicy {
+
+  private final Pattern pattern = Pattern.compile("(.+?)\\.(html|txt|htm|log)", Pattern.CASE_INSENSITIVE);
+
   @Override
   public boolean dealWith(File file, HttpResponse response) throws IOException {
-    
+
     final String fileName = file.getName();
     Matcher matcher = pattern.matcher(fileName);
     if (matcher.matches()) {

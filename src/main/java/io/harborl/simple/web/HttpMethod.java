@@ -24,7 +24,7 @@ public enum HttpMethod {
   public int getCode() {
     return code;
   }
-  
+
   public String getMethod() {
     return method;
   }

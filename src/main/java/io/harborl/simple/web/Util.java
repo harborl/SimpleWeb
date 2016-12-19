@@ -11,8 +11,7 @@ public final class Util {
 
   public static String buildContentDisposition(String fileName) {
     String encodedFileName = urlEncodeWithFullback(fileName);
-    String contentDisposition = "attachment; filename=\"" + encodedFileName +"\"; filename*=UTF-8''" + encodedFileName;
-    return contentDisposition;
+    return "attachment; filename=\"" + encodedFileName +"\"; filename*=UTF-8''" + encodedFileName;
   }
 
   public static String urlEncodeWithFullback(String src) {
@@ -24,7 +23,7 @@ public final class Util {
     }
     return target;
   }
-  
+
   public static String urlDecodeWithFullback(String src) {
     String target = null;
     try {
