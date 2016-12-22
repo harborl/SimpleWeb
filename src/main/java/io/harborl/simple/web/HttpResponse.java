@@ -90,9 +90,9 @@ public final class HttpResponse {
       for (int n; (n = fStream.read(buf)) != -1;) {
         sink.write(buf, 0, n);
       }
+      sink.flush();
     } finally {
       fStream.close();
-      sink.flush();
     }
   }
 

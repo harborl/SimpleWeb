@@ -44,7 +44,7 @@ public final class HttpRequest {
       final int splitPos = line.indexOf(':');
       if (splitPos != -1) {
         final String key = line.substring(0, splitPos).trim().toLowerCase();
-        final String value = line.substring(splitPos + 1).trim().toLowerCase();
+        final String value = line.substring(splitPos + 1).trim();
         headers.put(key, value);
       }
     }
