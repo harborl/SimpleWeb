@@ -1,4 +1,8 @@
-package io.harborl.simple.web;
+package io.harborl.simple.web.handler;
+
+import io.harborl.simple.web.http.HttpRequest;
+import io.harborl.simple.web.http.HttpResponse;
+import io.harborl.simple.web.content.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,26 +11,25 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class FileContentWebRequestHandler implements WebRequestHandler {
+public final class FileRequestHandler implements RequestHandler {
 
   private final Pattern pattern;
   private final String workPath;
-  private final List<ContentResponsePolicy> policyChain;
+  private final List<ContentPolicy> policyChain;
 
-  private FileContentWebRequestHandler(String path) {
-    this.pattern = Pattern.compile("\\/(.+)");
+  private FileRequestHandler(String path) {
+    this.pattern = Pattern.compile("/(.+)");
     this.workPath = path;
-    policyChain = new ArrayList<ContentResponsePolicy>();
+    policyChain = new ArrayList<>();
     {
-      policyChain.add(new HtmlTextContentResponsePolicy());
-      policyChain.add(new ImageContentResponsePolicy());
-      policyChain.add(new ZipContentResponsePolicy());
-      policyChain.add(new DefaultContentResponsePolicy());
+      policyChain.add(new TextContentPolicy());
+      policyChain.add(new ImageContentPolicy());
+      policyChain.add(new DefaultContentPolicy());
     }
   }
   
-  public static FileContentWebRequestHandler valueOf(String path) {
-    return new FileContentWebRequestHandler(path);
+  public static FileRequestHandler valueOf(String path) {
+    return new FileRequestHandler(path);
   }
 
   @Override
@@ -39,7 +42,7 @@ public final class FileContentWebRequestHandler implements WebRequestHandler {
       final File file = new File(workPath + "/" + fileName);
 
       if (file.exists() && !file.isDirectory()) {
-        for (ContentResponsePolicy policy : policyChain) {
+        for (ContentPolicy policy : policyChain) {
           if (policy.dealWith(file, response)) {
             return true;
           }

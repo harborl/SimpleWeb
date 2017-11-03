@@ -14,8 +14,8 @@ public final class Util {
     return "attachment; filename=\"" + encodedFileName +"\"; filename*=UTF-8''" + encodedFileName;
   }
 
-  public static String urlEncodeWithFullback(String src) {
-    String target = null;
+  private static String urlEncodeWithFullback(String src) {
+    String target;
     try {
       target = java.net.URLEncoder.encode(src, UTF_8);
     } catch (UnsupportedEncodingException fullback) {
@@ -25,7 +25,7 @@ public final class Util {
   }
 
   public static String urlDecodeWithFullback(String src) {
-    String target = null;
+    String target;
     try {
       target = java.net.URLDecoder.decode(src, "UTF-8");
     } catch (Exception fullback) {

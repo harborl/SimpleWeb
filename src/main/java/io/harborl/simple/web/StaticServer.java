@@ -1,5 +1,12 @@
 package io.harborl.simple.web;
 
+import io.harborl.simple.web.handler.FileRequestHandler;
+import io.harborl.simple.web.handler.FolderRequestHandler;
+import io.harborl.simple.web.handler.RequestHandler;
+import io.harborl.simple.web.http.HttpMethod;
+import io.harborl.simple.web.http.HttpRequest;
+import io.harborl.simple.web.http.HttpResponse;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -14,23 +21,19 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public final class StaticServer {
+final class StaticServer {
 
   private final int port;
-  private final int concurrentLevel;
-  private final String folderPath;
 
   /** 
    * Underlying chain-of-responsibility to handle the web request.
    */
-  private final Map<HttpMethod, List<WebRequestHandler>> handlerChains;
+  private final Map<HttpMethod, List<RequestHandler>> handlerChains;
 
   /**
    * Underlying request thread-pool based executor.
    */
   private final ExecutorService executor;
-
-  private ServerSocket serverSocket;
 
   // guarded by this
   private boolean started;
@@ -40,22 +43,22 @@ public final class StaticServer {
 
   private StaticServer(Builder builder) {
     this.port = builder.port;
-    this.concurrentLevel = builder.concurrentLevel;
-    this.folderPath = builder.folderPath;
+    int concurrentLevel = builder.concurrentLevel;
+    String folderPath = builder.folderPath;
 
-    if (this.concurrentLevel < 1 ||
-        this.folderPath == null ||
-        this.folderPath.isEmpty() ||
+    if (concurrentLevel < 1 ||
+        folderPath == null ||
+        folderPath.isEmpty() ||
         this.port < 0) {
       throw new IllegalArgumentException();
     }
 
     // Initialize the request handler mapping
-    handlerChains = new HashMap<HttpMethod, List<WebRequestHandler>>();
+    handlerChains = new HashMap<>();
     {
       handlerChains.put(HttpMethod.GET,
-        Arrays.asList(FileListWebRequestHandler.valueOf(folderPath), 
-                      FileContentWebRequestHandler.valueOf(folderPath))
+        Arrays.asList(FolderRequestHandler.valueOf(folderPath),
+                      FileRequestHandler.valueOf(folderPath))
       );
     }
 
@@ -65,20 +68,20 @@ public final class StaticServer {
     executor = 
       new ThreadPoolExecutor(0, concurrentLevel,
                              60L, TimeUnit.SECONDS,
-                             new SynchronousQueue<Runnable>(),
+                             new SynchronousQueue<>(),
                              Executors.defaultThreadFactory(),
                              new ThreadPoolExecutor.CallerRunsPolicy());
   }
 
-  public void start() throws IOException {
-    boolean isStarted = false;
+  void start() throws IOException {
+    boolean isStarted;
     synchronized(this) {
       isStarted = this.started;
       this.started = true;
     }
 
     if (!isStarted) {
-      serverSocket = new ServerSocket(this.port);
+      ServerSocket serverSocket = new ServerSocket(this.port);
 
       for ( ;!shutdown; ) {
         executor.execute(
@@ -100,7 +103,7 @@ public final class StaticServer {
     @Override
     public void run() {
 
-      HttpRequest httpRequst = null;
+      HttpRequest httpRequst;
       HttpResponse httpResponse = null;
 
       try {
@@ -110,9 +113,9 @@ public final class StaticServer {
         System.out.println("> [ " + new Date() + " ] " + httpRequst);
 
         if (handlerChains.containsKey(httpRequst.getMethod())) {
-          List<WebRequestHandler> chain = handlerChains.get(httpRequst.getMethod());
+          List<RequestHandler> chain = handlerChains.get(httpRequst.getMethod());
 
-          for (WebRequestHandler handler : chain) {
+          for (RequestHandler handler : chain) {
             if (handler.handle(httpRequst, httpResponse)) {
               return;
             }
@@ -138,15 +141,16 @@ public final class StaticServer {
     }
   }
 
-  public void shutdown() {
+  void shutdown() {
     shutdown = true;
+    executor.shutdown();
   }
 
-  public static Builder newBuilder() {
+  static Builder newBuilder() {
     return new Builder();
   }
 
-  public final static class Builder {
+  final static class Builder {
 
     private int port;
     private int concurrentLevel;
@@ -154,22 +158,22 @@ public final class StaticServer {
     
     private Builder() { }
     
-    public Builder port(int port) {
+    Builder port(int port) {
       this.port = port;
       return this;
     }
 
-    public Builder concurrentLevel(int level) {
+    Builder concurrentLevel(int level) {
       this.concurrentLevel = level;
       return this;
     }
 
-    public Builder folderPath(String path) {
+    Builder folderPath(String path) {
       this.folderPath = path;
       return this;
     }
 
-    public StaticServer build() {
+    StaticServer build() {
       return new StaticServer(this);
     }
   }

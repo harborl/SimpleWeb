@@ -1,4 +1,6 @@
-package io.harborl.simple.web;
+package io.harborl.simple.web.http;
+
+import io.harborl.simple.web.Util;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
@@ -22,6 +24,7 @@ public final class HttpResponse {
     return new HttpResponse(outStream);
   }
 
+  @SuppressWarnings("unused")
   public OutputStream getOutputStream() {
     return sink;
   }
@@ -84,15 +87,12 @@ public final class HttpResponse {
     writer.flush();
 
     // write body
-    FileInputStream fStream = new FileInputStream(file);
-    try {
+    try (FileInputStream fStream = new FileInputStream(file)) {
       byte[] buf = new byte[Util.BUF_SIZE];
-      for (int n; (n = fStream.read(buf)) != -1;) {
+      for (int n; (n = fStream.read(buf)) != -1; ) {
         sink.write(buf, 0, n);
       }
       sink.flush();
-    } finally {
-      fStream.close();
     }
   }
 

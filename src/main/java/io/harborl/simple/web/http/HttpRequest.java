@@ -1,4 +1,6 @@
-package io.harborl.simple.web;
+package io.harborl.simple.web.http;
+
+import io.harborl.simple.web.Util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,9 +35,9 @@ public final class HttpRequest {
     path = Util.urlDecodeWithFullback(tokens[1]);
     httpVersion = tokens[2];
 
-    headers = new HashMap<String, String>();
+    headers = new HashMap<>();
     
-    for (String line = null; (line = reader.readLine()) != null; ) {
+    for (String line; (line = reader.readLine()) != null; ) {
       line = line.trim();
       
       // Reach the end of headers
@@ -67,6 +69,7 @@ public final class HttpRequest {
     return path;
   }
 
+  @SuppressWarnings("unused")
   public Map<String, String> getHeaders() {
     return Collections.unmodifiableMap(headers);
   }
@@ -75,10 +78,12 @@ public final class HttpRequest {
     return method;
   }
 
+  @SuppressWarnings("unused")
   public String getHttpVersion() {
     return httpVersion;
   }
 
+  @SuppressWarnings("unused")
   public InputStream getInStream() {
     return inStream;
   }

@@ -1,13 +1,11 @@
-package io.harborl.simple.web;
+package io.harborl.simple.web.http;
 
 public enum HttpMethod {
-  GET(1, "Get"),
-  POST(2, "Post");
+  GET("Get"),
+  POST("Post");
 
-  private final int code;
   private final String method;
-  private HttpMethod(int code, String method) {
-    this.code = code;
+  HttpMethod(String method) {
     this.method = method;
   }
 
@@ -19,10 +17,6 @@ public enum HttpMethod {
     }
 
     throw new IllegalArgumentException("invalid method - " + method);
-  }
-
-  public int getCode() {
-    return code;
   }
 
   public String getMethod() {

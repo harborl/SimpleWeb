@@ -26,17 +26,15 @@ public final class Bootstrap {
 
     try {
       info("SimpleWeb server startup ...");
-      info("Listening on: " + port);
-      info("Folder hosted on: " + path);
-      info("-------------------------------");
+      info("Listening on : port - " + port + ", folder - " + path);
+      info("---------------------------------------------------");
 
       // main thread blocks here
       server.start();
     } catch (IOException e) {
-      err("Error raised on startup:");
-      e.printStackTrace();
+      err("Error raised on startup:", e);
     } finally {
-      System.exit(0);
+      server.shutdown();
     }
   }
 
@@ -48,8 +46,9 @@ public final class Bootstrap {
     System.out.println(info);
   } 
   
-  private static void err(String err) {
-    System.err.println(err);
+  private static void err(String msg, Exception exp) {
+    System.err.println(msg);
+    exp.printStackTrace();
   }
 
 }
