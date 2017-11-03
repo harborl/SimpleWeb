@@ -36,7 +36,10 @@ public final class FolderRequestHandler implements RequestHandler {
 
         final StringBuilder sb = new StringBuilder();
         {
-          sb.append("<!DOCTYPE html>\n");
+          sb.append("<!DOCTYPE html>\n").append("<html>\n")
+                  .append("<head>\n")
+                  .append("<title>").append(folder.getName()).append("</title>\n")
+                  .append("</head>\n");
           sb.append("<body>\n");
 
           if (files != null && files.length > 0) {
@@ -52,7 +55,7 @@ public final class FolderRequestHandler implements RequestHandler {
             }
             sb.append("</ul>\n");
           } else {
-            sb.append("Empty Folder!");
+            sb.append("<b>Empty Folder!</b>");
           }
 
           sb.append("</body>\n");

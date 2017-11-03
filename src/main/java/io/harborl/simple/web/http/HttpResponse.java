@@ -63,6 +63,7 @@ public final class HttpResponse {
     writer.write("Server: SimpleWeb" + "\r\n");
     writer.write("Content-Type: text/html; charset=utf-8" + "\r\n");
     writer.write("Content-Length: " + info.getBytes(Util.UTF_8).length + "\r\n");
+    writer.write("Cache-Control: private" + "\r\n");
     writer.write("\r\n");
 
     // write body
@@ -83,6 +84,7 @@ public final class HttpResponse {
     if (contentDispository != null && !contentDispository.isEmpty()) {
       writer.write(("Content-Dispository: " + contentDispository + "\r\n").getBytes());
     }
+    writer.write(("Cache-Control: private, max-age=600" + "\r\n").getBytes());
     writer.write(("\r\n").getBytes());
     writer.flush();
 
